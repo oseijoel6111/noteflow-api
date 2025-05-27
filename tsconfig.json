@@ -1,0 +1,18 @@
+{
+  "compilerOptions": {
+    "target": "ES2019",                         // ES2016 is okay, but ES2019+ gives async improvements
+    "module": "commonjs",
+    "rootDir": "src",                           // Where your source TypeScript files are
+    "outDir": "dist",                           // Where transpiled JS files will go
+    "strict": true,
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "noImplicitAny": true,
+    "alwaysStrict": true,
+    "skipLibCheck": true,                       // Speeds up compilation
+    "resolveJsonModule": true,                  // So you can import JSON files
+    "sourceMap": true                           // Enables .map files for easier debugging
+  },
+  "include": ["src"],
+  "exclude": ["node_modules", "dist"]
+}
