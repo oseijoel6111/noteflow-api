@@ -10,6 +10,8 @@ export const userSignUpSchema = z.object({
     })
 })
 
+export type CreateUserInput = z.infer<typeof userSignUpSchema>
+
 export const userLoginSchema = z.object({
     username: z.string().min(3, 'Invalid username'),
     password: z.string().min(6, 'Password must be at least 8 characters long'),
