@@ -5,11 +5,10 @@ export const signUp = (req:Request, res:Response)=>{
 
     const userResponse = {
         status: 'success',
-        message: 'User created successfully',
+        message: 'User created successfully. A verification code has been sent to your email.',
         data: {
             user: req.body
-        },
-        token : '1234567890abcdefg'
+        }
     }
     res.json(userResponse);
 }

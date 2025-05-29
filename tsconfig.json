@@ -5,6 +5,8 @@
     "rootDir": "src",                           // Where your source TypeScript files are
     "outDir": "dist",                           // Where transpiled JS files will go
     "strict": true,
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
     "noImplicitAny": true,
