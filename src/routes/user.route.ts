@@ -5,7 +5,7 @@ import { userSignUpSchema } from '../validators/user.validator';
 
 const userRouter = express.Router()
 
-userRouter.post('/signup', validate(userSignUpSchema), signUp)
+userRouter.post('/signup', validate(userSignUpSchema, 'body'), signUp)
 userRouter.post('/login', login)
 
 export {userRouter};

@@ -1,31 +1,31 @@
 import { NextFunction, Request, Response } from 'express';
-import { findUserByEmail } from '../services'
-import { successResponse } from '../utils/response.util'
-import {generateHash} from '../utils/password.util'
+import { findUserByEmail, createUser } from '../services'
+import {generateHash, logger, errorResponse, successResponse, generateCode} from '../utils'
+import {StatusCodes} from 'http-status-codes'
 
-export const signUp = (req: Request, res: Response, next:NextFunction) => {
+export const signUp = async(req: Request, res: Response, next:NextFunction) => {
     try{
     //    determine if user already exist
-    const existingUser = findUserByEmail(req.body.email);
-    if (!existingUser)  successResponse(res, 400, 'User already exists', { email: 'Email already registered' });
+    const existingUser = await findUserByEmail(req.body.email);
+    if (existingUser)  successResponse(res, StatusCodes.BAD_REQUEST, 'User already exists', { email: 'Email already registered' });
 
     // hash password
-    const hashPassword = generateHash(req.body.password)
+    const hashPassword = await generateHash(req.body.password)
     req.body.password = hashPassword;
-
     
+    // generate verification code
+    const verificationCode = generateCode();
+    logger.info({ message: 'Generated verification code', code: verificationCode });
+
+    req.body.verificationCode = verificationCode;
+ 
     // save user to database
+    logger.info({ message: 'Creating user', body: req.body });
+    const user = await createUser(req.body)
+    if (!user)  errorResponse(res, StatusCodes.INTERNAL_SERVER_ERROR, 'User creation failed', {});
 
-    // send verification email
 
-    const userResponse = {
-        status: 'success',
-        message: 'User created successfully. A verification code has been sent to your email.',
-        data: {
-            user: req.body
-        }
-    }
-    res.json(userResponse);
+    successResponse(res, StatusCodes.CREATED, 'User created successfully. A verification code has been sent to your email.', { user: req.body });
 
 }catch (error) {
     next(error);

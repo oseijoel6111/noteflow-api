@@ -5,8 +5,8 @@ import { CreateUserInput } from '../validators'
 const userRepository = AppDataSource.getRepository(User);
 
 
-export const createUser = async (data: CreateUserInput) => {
-    const user = userRepository.create(data.body)
+export const createUser = async (userData: CreateUserInput) => {
+    const user = userRepository.create(userData)
     return await userRepository.save(user)
 }
 

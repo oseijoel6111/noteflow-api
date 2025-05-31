@@ -1,6 +1,6 @@
 import app from './app';
 import { ENV } from './config';
-import logger from './utils/logger';
+import {logger} from './utils';
 import { AppDataSource } from './config'
 
 
