@@ -24,6 +24,15 @@ export const signUp = async(req: Request, res: Response, next:NextFunction) => {
     const user = await createUser(req.body)
     if (!user)  errorResponse(res, StatusCodes.INTERNAL_SERVER_ERROR, 'User creation failed', {});
 
+    // remove sensitive data from response
+    delete req.body.password;
+    delete req.body.verificationCode;
+
+    // send verification code to user email
+    // Note: In a real application, you would send the verification code via email.
+    logger.info({ message: 'Sending verification code to user email', email: req.body.email, code: verificationCode });
+    
+
 
     successResponse(res, StatusCodes.CREATED, 'User created successfully. A verification code has been sent to your email.', { user: req.body });
 
