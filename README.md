@@ -52,9 +52,38 @@ cd noteflow-api
 ```
 
 ### 3. Configure environment
+##### Create a ```.env``` file in the root directory and define your configuration values. Below is a sample of what to include:
 ```bash
-    PORT=3000
-    DB_URL=your_database_connection_string
-    JWT_SECRET=your_jwt_secret
+    # App configuration
+APP_NAME=Noteflow
+APP_VERSION=1.0.0
+APP_EMAIL=no-reply@noteflow.org
+
+PORT=4500
+SALT_ROUNDS=10
+GENERATE_CODE_LENGTH=6
+
+# Database configuration
+DB_HOST=your_db_host
+DB_PORT=5432
+DB_USERNAME=your_db_username
+DB_PASSWORD=your_db_password
+DB_NAME=your_db_name
+DB_SYNC=true
+DB_LOGGING=true
+
+# Mail configuration
+MAIL_HOST=your_mail_host
+MAIL_PORT=your_mail_port
+MAIL_USERNAME=your_mail_username
+MAIL_PASSWORD=your_mail_password
+
+# Redis configuration
+REDIS_HOST=your_redis_host
+REDIS_PORT=your_redis_port
+REDIS_MAX_TRIES=3
+
+# JWT configuration
+JWT_SECRET=your_jwt_secret
 
 ```

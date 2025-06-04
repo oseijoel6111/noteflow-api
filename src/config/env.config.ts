@@ -11,5 +11,8 @@ export const ENV = {
     MAIL_USERNAME: process.env.MAIL_USERNAME || 'user',
     MAIL_PASSWORD: process.env.MAIL_PASSWORD || 'password',
     APP_NAME: process.env.APP_NAME || 'MyApp',
-    APP_MAIL: process.env.APP_MAIL || ''
+    APP_MAIL: process.env.APP_MAIL || '',
+    REDIS_HOST: process.env.REDIS_HOST || 'localhost',
+    REDIS_PORT: parseInt(process.env.REDIS_PORT || '6379', 10),
+    REDIS_MAX_TRIES: parseInt(process.env.REDIS_MAX_TRIES || '3', 10),
 }

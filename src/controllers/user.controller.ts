@@ -3,7 +3,6 @@ import { findUserByEmail, createUser } from '../services'
 import { generateHash, logger, errorResponse, successResponse, generateCode } from '../utils'
 import { StatusCodes } from 'http-status-codes'
 import { sendVerificationEmail } from '../mails/mailer.service';
-import { log } from 'console';
 
 export const signUp = async (req: Request, res: Response, next: NextFunction) => {
     try {
