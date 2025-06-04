@@ -1,25 +1,14 @@
-import {Queue} from 'bullmq'
-import {ENV} from './env.config'
-import {Redis} from 'ioredis'
+import { Queue } from 'bullmq'
+import { ENV } from './env.config'
+import IORedis from 'ioredis'
 
 // Create a Redis connection instance
-const redisConnection = new Redis({
+const redisConnection = new IORedis({
     host: ENV.REDIS_HOST,
     port: ENV.REDIS_PORT,
-    maxRetriesPerRequest:  , // Disable automatic retries
+    maxRetriesPerRequest: ENV.REDIS_MAX_TRIES, // Disable automatic retries
     enableReadyCheck: true, // Enable ready check to ensure Redis is ready before using it
 })
 
-export const emailQueue = new Queue('email', {
-    connection: {
-        host: ENV.REDIS_HOST,
-        port: ENV.REDIS_PORT,
-    },
-    defaultJobOptions: {
-        attempts: 3,
-        backoff: {
-            type: 'exponential',
-            delay: 1000,
-        },
-    }
-})
+// Create a BullMQ queue for email processing
+export const emailQueue = new Queue('email', { connection: redisConnection })

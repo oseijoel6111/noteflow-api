@@ -2,7 +2,7 @@ import { NextFunction, Request, Response } from 'express';
 import { findUserByEmail, createUser } from '../services'
 import { generateHash, logger, errorResponse, successResponse, generateCode } from '../utils'
 import { StatusCodes } from 'http-status-codes'
-import { sendVerificationEmail } from '../mails/mailer.service';
+import { sendVerificationEmailJob } from '../jobs'
 
 export const signUp = async (req: Request, res: Response, next: NextFunction) => {
     try {
@@ -32,8 +32,7 @@ export const signUp = async (req: Request, res: Response, next: NextFunction) =>
         // Note: In a real application, you would send the verification code via email.
         logger.info({ message: 'Sending verification code to user email', email: req.body.email, code: verificationCode });
 
-        const mailResponse = await sendVerificationEmail(req.body.email, verificationCode)
-        logger.info({ message: 'Verification email sent', response: mailResponse });
+        await sendVerificationEmailJob(req.body.email, verificationCode)
         successResponse(res, StatusCodes.CREATED, 'User created successfully. A verification code has been sent to your email.', { user: req.body });
 
     } catch (error) {
