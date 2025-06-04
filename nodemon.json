@@ -1,5 +1,5 @@
 {
     "watch": ["src"],
     "ext": "ts",
-    "exec": "ts-node src/server.ts"
+    "exec": "concurrently -k -n WORKERS,SERVER -c green,blue \"npm run worker\" \"npm run server\" "
 }
