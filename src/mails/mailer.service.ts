@@ -21,3 +21,8 @@ export const sendVerificationEmail = async (email: string, verificationCode: str
     }
 
 }
+
+export const resendVerificationEmail = async (email: string, verificationCode: string): Promise<any> => {
+    
+}
+
