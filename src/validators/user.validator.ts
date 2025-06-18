@@ -14,3 +14,8 @@ export const userLoginSchema = z.object({
     username: z.string().min(3, 'Invalid username'),
     password: z.string().min(6, 'Password must be at least 8 characters long'),
 })
+
+export const userVerificationSchema = z.object({
+    email: z.string().email('Invalid email address'),
+})
+    
