@@ -23,8 +23,9 @@ export const sendVerificationEmail = async (
   } catch (error) {
     console.error("Error sending verification email:", error);
     throw new Error("Failed to send verification email");
-  }
+  };
 };
+
 
 export const sendPasswordResetEmail = async (
   email: string,
@@ -47,5 +48,5 @@ export const sendPasswordResetEmail = async (
   } catch (error) {
     console.error("Error sending password reset email:", error);
     throw new Error("Failed to send password reset email");
-  }
+  };
 };

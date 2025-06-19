@@ -122,8 +122,6 @@ export const resendVerificationCode = async (req: Request, res: Response, next: 
   }
 }
 
-
-
 // login user
 export const login = (req: Request, res: Response) => {
   const userResponse = {
