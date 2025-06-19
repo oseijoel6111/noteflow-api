@@ -17,5 +17,9 @@ export const userLoginSchema = z.object({
 
 export const userVerificationSchema = z.object({
     email: z.string().email('Invalid email address'),
+});
+
+export const passwordResetRequestSchema = z.object({
+    email: z.string().email('Invalid email address'),
 })
     

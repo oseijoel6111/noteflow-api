@@ -1,4 +1,4 @@
-import { Queue } from 'bullmq'
+import { Queue, RedisConnection } from 'bullmq'
 import { ENV } from './env.config'
 import IORedis from 'ioredis'
 
@@ -12,3 +12,4 @@ export const redisConnection = new IORedis({
 
 // Create a BullMQ queue for email processing
 export const emailQueue = new Queue('email', { connection: redisConnection })
+export const passwordResetQueue = new Queue('passwordReset', {connection: redisConnection})
