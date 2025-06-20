@@ -1,82 +1,91 @@
-import {Entity, PrimaryGeneratedColumn, Column, BeforeInsert, BeforeUpdate, OneToOne, OneToMany, JoinColumn} from 'typeorm'
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  BeforeInsert,
+  BeforeUpdate,
+  OneToMany,
+  JoinColumn,
+  ManyToOne,
+} from "typeorm";
 
-@Entity({name: 'users'})
+@Entity({ name: "users" })
 export class User {
-    @PrimaryGeneratedColumn()
-    id!: number
+  @PrimaryGeneratedColumn()
+  id!: number;
 
-    @Column()
-    username!: string
+  @Column()
+  username!: string;
 
-    @Column()
-    email!: string
+  @Column()
+  email!: string;
 
-    @Column()
-    password!: string
+  @Column()
+  password!: string;
 
-    @Column()
-    isVerified!: boolean
+  @Column()
+  isVerified!: boolean;
 
-    @Column()
-    verificationCode!: string
+  @Column()
+  verificationCode!: string;
 
-    @Column()
-    createdAt!: Date
+  @Column()
+  createdAt!: Date;
 
-    @Column()
-    updatedAt!: Date
+  @Column()
+  updatedAt!: Date;
 
-    @BeforeInsert()
-    setDates():void {
-        const now = new Date();
-        this.createdAt = now;
-        this.updatedAt = now;
-        this.isVerified = false;
-    }
+  @BeforeInsert()
+  setDates(): void {
+    const now = new Date();
+    this.createdAt = now;
+    this.updatedAt = now;
+    this.isVerified = false;
+  }
 
-    @BeforeUpdate()
-    updateDates():void {
-        this.updatedAt = new Date();
-    }
+  @BeforeUpdate()
+  updateDates(): void {
+    this.updatedAt = new Date();
+  }
 
-    @OneToMany(()=> PasswordResetCode, (resetCode)=> resetCode.user)
-    passwordResetCodes!: PasswordResetCode[]
+  @OneToMany(() => PasswordResetCode, (resetCode) => resetCode.user)
+  passwordResetCodes!: PasswordResetCode[];
 }
 
-@Entity({name: 'password_reset_codes'})
-export class PasswordResetCode{
-    @PrimaryGeneratedColumn()
-    id!: number
-    
-    @Column()
-    resetCode!: number
+@Entity({ name: "password_reset_codes" })
+export class PasswordResetCode {
+  @PrimaryGeneratedColumn()
+  id!: number;
 
-    @Column()
-    expiresAt!: Date
+  @Column()
+  resetCode!: number;
 
-    @Column()
-    isUsed!: boolean
+  @Column()
+  expiresAt!: Date;
 
-    @Column()
-    createdAt!: Date
+  @Column()
+  isUsed!: boolean;
 
-    @Column()
-    updatedAt!: Date
+  @Column()
+  createdAt!: Date;
 
-    @BeforeInsert()
-    setDates():void {
-        const now = new Date();
-        this.createdAt = now;
-        this.updatedAt = now;
-        this.isUsed = false;
-    }
+  @Column()
+  updatedAt!: Date;
 
-    @BeforeUpdate()
-    updateDates():void {
-        this.updatedAt = new Date();
-    }
+  @BeforeInsert()
+  setDates(): void {
+    const now = new Date();
+    this.createdAt = now;
+    this.updatedAt = now;
+    this.isUsed = false;
+  }
 
-    @OneToOne(()=> User, (user) => user.passwordResetCodes)
-    @JoinColumn({name: 'userId'})
-    user!: User
+  @BeforeUpdate()
+  updateDates(): void {
+    this.updatedAt = new Date();
+  }
+
+  @ManyToOne(() => User, (user: { passwordResetCodes: any; }) => user.passwordResetCodes)
+  @JoinColumn({ name: "userId" })
+  user!: User;
 }
