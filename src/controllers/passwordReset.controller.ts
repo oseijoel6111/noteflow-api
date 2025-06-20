@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from "express";
-import { findUserByEmail } from "../services";
+import { findUserByEmail, saveResetPasswordCode } from "../services";
 import { logger, errorResponse, successResponse, generateCode } from "../utils";
 import { StatusCodes } from "http-status-codes";
 import { sendPasswordResetEmailJob } from "../jobs";
@@ -43,6 +43,9 @@ export const passwordResetRequest = async (
     });
 
     // save reset code
+    await saveResetPasswordCode(existingUser.email, resetCode)
+
+    // send email
     await sendPasswordResetEmailJob(existingUser.email, resetCode);
     logger.info({
       message: "Password reset code sent",
