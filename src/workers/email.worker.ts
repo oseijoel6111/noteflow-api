@@ -1,5 +1,5 @@
 import { Worker } from 'bullmq'
-import { sendVerificationEmail } from '../mails/mailer.service'
+import { sendVerificationEmail, sendPasswordResetEmail } from '../mails/mailer.service'
 import { logger } from '../utils'
 import { redisConnection } from '../config'
 
@@ -19,5 +19,25 @@ sendVerificationEmailWorker.on('failed', (job, err) => {
 })
 
 sendVerificationEmailWorker.on('progress', (job, progress) => {
+    logger.info(`Email job progress: ${job.id}, Progress: ${progress}%`)
+})
+
+// send reset password email worker
+export const sendResetPasswordEmailWorker = new Worker('passwordReset', async job =>{
+    const {email, resetCode} = job.data;
+    await sendPasswordResetEmail(email, resetCode);
+},
+    {connection: redisConnection}
+)
+
+sendResetPasswordEmailWorker.on('completed', job => {
+    logger.info(`Email job completed successfully: ${job.id}`)
+})
+
+sendResetPasswordEmailWorker.on('failed', (job, err) => {
+    logger.error(`Email job failed: ${job?.id}, Error: ${err.message}`)
+})
+
+sendResetPasswordEmailWorker.on('progress', (job, progress) => {
     logger.info(`Email job progress: ${job.id}, Progress: ${progress}%`)
 })

@@ -4,6 +4,7 @@ import {userRouter} from './routes';
 
 const app = express();
 app.use(express.json());
+app.use(express.urlencoded({extended: false}));
 app.use(cors());
 
 const API_VERSION = '/api/v1';

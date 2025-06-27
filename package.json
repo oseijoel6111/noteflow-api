@@ -6,7 +6,11 @@
   "scripts": {
     "server": "ts-node src/server.ts",
     "worker": "ts-node src/workers",
-    "dev": "nodemon"
+    "dev": "nodemon",
+    "typeorm": "ts-node -r tsconfig-paths/register ./node_modules/typeorm/cli.js",
+    "migration:generate": "npm run typeorm migration:generate -d src/data-source.ts",
+    "migration:run": "npm run typeorm migration:run -d src/data-source.ts",
+    "migration:revert": "npm run typeorm migration:revert -d src/data-source.ts"
   },
   "keywords": [],
   "author": "",
@@ -39,6 +43,7 @@
     "concurrently": "^9.1.2",
     "nodemon": "^3.1.10",
     "ts-node": "^10.9.2",
+    "tsconfig-paths": "^4.2.0",
     "typescript": "^5.8.3"
   }
 }
