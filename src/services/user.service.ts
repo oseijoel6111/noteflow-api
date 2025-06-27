@@ -14,30 +14,13 @@ export const findUserByEmail = async (email: string) => {
   return await userRepository.findOneBy({ email });
 };
 
-// create password reset code
+// request password reset code
 export const createResetCode = async (
+  user: User,
   code: number,
-  expiryMinutes: number = 10
-): Promise<PasswordResetCode | null> => {
-  const expiresAt = new Date();
-  expiresAt.setMinutes(expiresAt.getMinutes() + expiryMinutes);
-
-  const resetCode = resetPasswordRepository.create({
-    resetCode: code,
-    isUsed: false,
-  });
-  return await resetPasswordRepository.save(resetCode);
-};
-export const saveResetPasswordCode = async (
-  email: string,
-  resetPasswordCode: string
-): Promise<void> => {
-  const user = await userRepository.findOneBy({ email });
-
-  if (!user) {
-    throw new Error("User not found");
-  }
-
+  expiryMinutes: number = 15
+): Promise<PasswordResetCode> => {
+  // Invalidate previous unused codes
   await resetPasswordRepository.update(
     {
       user: { id: user.id },
@@ -48,15 +31,19 @@ export const saveResetPasswordCode = async (
       updatedAt: new Date(),
     }
   );
-  const expiresAt = new Date(Date.now() + 15 * 60 * 1000);
 
-  const resetPasswordCodeEntity = resetPasswordRepository.create({
-    resetCode: Number(resetPasswordCode),
-    expiresAt,
+  // Set expiry
+  const expiresAt = new Date();
+  expiresAt.setMinutes(expiresAt.getMinutes() + expiryMinutes);
+
+  // Create and save new code
+  const resetCode = resetPasswordRepository.create({
+    resetCode: code,
     isUsed: false,
+    expiresAt,
     user,
   });
 
-  // Save new code
-  await resetPasswordRepository.save(resetPasswordCodeEntity);
+  return await resetPasswordRepository.save(resetCode);
 };
+

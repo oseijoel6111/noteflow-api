@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from "express";
-import { findUserByEmail, saveResetPasswordCode } from "../services";
+import { createResetCode, findUserByEmail } from "../services";
 import { logger, errorResponse, successResponse, generateCode } from "../utils";
 import { StatusCodes } from "http-status-codes";
 import { sendPasswordResetEmailJob } from "../jobs";
@@ -18,7 +18,7 @@ export const passwordResetRequest = async (
       });
       return;
     }
-    // check if user is verified
+  // ?check if user is verified
     if (!existingUser.isVerified) {
       errorResponse(res, StatusCodes.BAD_REQUEST, "Email not verified", {
         email: "Kindly verifiy your email before resetting your password",
@@ -43,7 +43,7 @@ export const passwordResetRequest = async (
     });
 
     // save reset code
-    await saveResetPasswordCode(existingUser.email, resetCode)
+    await createResetCode(existingUser, Number(resetCode))
 
     // send email
     await sendPasswordResetEmailJob(existingUser.email, resetCode);
@@ -66,3 +66,6 @@ export const passwordResetRequest = async (
     );
   }
 };
+
+
+
