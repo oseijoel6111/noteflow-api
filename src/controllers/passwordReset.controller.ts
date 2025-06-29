@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from "express";
-import { createResetCode, findUserByEmail } from "../services";
-import { logger, errorResponse, successResponse, generateCode } from "../utils";
+import { createResetCode, findUserByEmail, verifyResetPasswordCode } from "../services";
+import { logger, errorResponse, successResponse, generateCode, generateResetPasswordToken } from "../utils";
 import { StatusCodes } from "http-status-codes";
 import { sendPasswordResetEmailJob } from "../jobs";
 
@@ -18,7 +18,7 @@ export const passwordResetRequest = async (
       });
       return;
     }
-  // ?check if user is verified
+    // check if user is verified
     if (!existingUser.isVerified) {
       errorResponse(res, StatusCodes.BAD_REQUEST, "Email not verified", {
         email: "Kindly verifiy your email before resetting your password",
@@ -43,7 +43,7 @@ export const passwordResetRequest = async (
     });
 
     // save reset code
-    await createResetCode(existingUser, Number(resetCode))
+    await createResetCode(existingUser, Number(resetCode));
 
     // send email
     await sendPasswordResetEmailJob(existingUser.email, resetCode);
@@ -67,5 +67,34 @@ export const passwordResetRequest = async (
   }
 };
 
+// verify password reset code
+export const verifyPasswordResetCode = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const { resetCode } = req.body;
 
+    const user = await verifyResetPasswordCode(resetCode);
+
+    if (!user) {
+      errorResponse(res, StatusCodes.BAD_REQUEST, "Invalid or expired code", {
+        resetCode: "Code is invalid or expired"
+      });
+      return
+    }
+    const token = generateResetPasswordToken(user!.id)
+    successResponse(res, StatusCodes.OK, "Reset code verified", {
+      resetToken: token
+    });
+  } catch (error) {
+    errorResponse(
+      res,
+      StatusCodes.INTERNAL_SERVER_ERROR,
+      "An error occurred during code verification",
+      { error}
+    );
+  }
+};
 

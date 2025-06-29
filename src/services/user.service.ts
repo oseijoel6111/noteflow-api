@@ -47,3 +47,28 @@ export const createResetCode = async (
   return await resetPasswordRepository.save(resetCode);
 };
 
+// verify reset code
+export const verifyResetPasswordCode = async (
+  resetCode: string
+): Promise<User | null> => {
+  const resetCodeEntry = await resetPasswordRepository.findOne({
+    where: {
+      resetCode: Number(resetCode),
+      isUsed: false,
+    },
+    order: { createdAt: "DESC" },
+    relations: ["user"],
+  });
+
+  if (!resetCodeEntry) return null;
+
+  const now = new Date();
+  if (now > resetCodeEntry.expiresAt) return null;
+
+  // Mark as used
+  resetCodeEntry.isUsed = true;
+  resetCodeEntry.updatedAt = now;
+  await resetPasswordRepository.save(resetCodeEntry);
+
+  return resetCodeEntry.user;
+};
