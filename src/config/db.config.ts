@@ -1,6 +1,6 @@
 import {DataSource} from 'typeorm'
 import dotEnv from 'dotenv'
-import {User} from '../models'
+import {PasswordResetCode, User} from '../models'
 
 dotEnv.config()
 
@@ -13,5 +13,5 @@ export const AppDataSource = new DataSource({
     database: process.env.DB_NAME || 'mydatabase',
     synchronize: process.env.DB_SYNC === 'true',
     logging: process.env.DB_LOGGING === 'true',
-    entities: [User],
+    entities: [User, PasswordResetCode],
 })
