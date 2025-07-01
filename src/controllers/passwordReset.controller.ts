@@ -1,8 +1,23 @@
 import { Request, Response, NextFunction } from "express";
-import { createResetCode, findUserByEmail, verifyResetPasswordCode } from "../services";
-import { logger, errorResponse, successResponse, generateCode, generateResetPasswordToken } from "../utils";
+import jwt from "jsonwebtoken";
+import {
+  createResetCode,
+  findUserByEmail,
+  findUserById,
+  saveNewUserPassword,
+  verifyResetPasswordCode,
+} from "../services";
+import {
+  logger,
+  errorResponse,
+  successResponse,
+  generateCode,
+  generateResetPasswordToken,
+  generateHash,
+} from "../utils";
 import { StatusCodes } from "http-status-codes";
 import { sendPasswordResetEmailJob } from "../jobs";
+import { error } from "console";
 
 export const passwordResetRequest = async (
   req: Request,
@@ -80,21 +95,62 @@ export const verifyPasswordResetCode = async (
 
     if (!user) {
       errorResponse(res, StatusCodes.BAD_REQUEST, "Invalid or expired code", {
-        resetCode: "Code is invalid or expired"
+        resetCode: "Code is invalid or expired",
       });
-      return
+      return;
     }
-    const token = generateResetPasswordToken(user!.id)
+    const token = generateResetPasswordToken(user!.id);
     successResponse(res, StatusCodes.OK, "Reset code verified", {
-      resetToken: token
+      resetToken: token,
     });
   } catch (error) {
     errorResponse(
       res,
       StatusCodes.INTERNAL_SERVER_ERROR,
       "An error occurred during code verification",
-      { error}
+      { error }
     );
   }
 };
 
+// reset password
+export const resetPassword = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const {token, newPassword} = req.body;
+    const secret = process.env.PASSWORD_RESET_SECRET;
+    if (!secret) {
+      errorResponse(
+        res,
+        StatusCodes.INTERNAL_SERVER_ERROR,
+        "Password reset secret is not configured",
+        {}
+      );
+      return;
+    }
+    const payload = jwt.verify(token, secret) as unknown as { userid: number; purpose: string };
+    if (payload.purpose !== 'password-reset'){
+      errorResponse(res, StatusCodes.UNAUTHORIZED, "Invalid reset token", {error})
+      return;
+    }
+    const user = await findUserById(payload.userid);
+    if (!user){
+      errorResponse(res, StatusCodes.NOT_FOUND, "User not found", {error})
+      return;
+    }
+    
+    await saveNewUserPassword(user.id, newPassword);
+
+    successResponse(res, StatusCodes.ACCEPTED, "Password reset successful");
+  } catch (error) {
+    errorResponse(
+      res,
+      StatusCodes.INTERNAL_SERVER_ERROR,
+      "An error occured while resetting password",
+      { error }
+    );
+  }
+}

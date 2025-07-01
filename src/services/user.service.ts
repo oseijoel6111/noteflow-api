@@ -1,5 +1,6 @@
 import { AppDataSource } from "../config";
 import { PasswordResetCode, User } from "../models";
+import { generateHash } from "../utils";
 import { CreateUserInput } from "../validators";
 
 const userRepository = AppDataSource.getRepository(User);
@@ -13,6 +14,11 @@ export const createUser = async (userData: CreateUserInput) => {
 export const findUserByEmail = async (email: string) => {
   return await userRepository.findOneBy({ email });
 };
+
+// find user by id
+export const findUserById = async (userId: number) => {
+  return await userRepository.findOneBy({id: userId})
+}
 
 // request password reset code
 export const createResetCode = async (
@@ -71,4 +77,18 @@ export const verifyResetPasswordCode = async (
   await resetPasswordRepository.save(resetCodeEntry);
 
   return resetCodeEntry.user;
+};
+
+// save user new password
+export const saveNewUserPassword = async (
+  userId: number,
+  newPassword: string
+): Promise<void> => {
+  const user = await userRepository.findOneBy({ id: userId });
+  if (!user) {
+    throw new Error('User not found');
+  }
+  const hashedPassword = await generateHash(newPassword);
+  user.password = hashedPassword;
+  await userRepository.save(user);
 };

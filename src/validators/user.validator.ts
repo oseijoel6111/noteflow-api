@@ -29,5 +29,23 @@ export const passwordResetRequestSchema = z.object({
 });
 
 export const passwordResetVerificationCodeSchema = z.object({
-  resetCode: z.string().min(6)
+  resetCode: z.string().min(6),
 });
+
+export const passwordResetSchema = z
+  .object({
+    token: z.string().min(1),
+    newPassword: z
+      .string()
+      .min(6, "Password must be at least 6 characters long")
+      .max(15, "Password must be at most 15 characters long")
+      .regex(
+        /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,15}$/,
+        "Password must contain at least one uppercase letter, one lowercase letter, and one number"
+      ),
+    confirmNewPassword: z.string().min(6),
+  })
+  .refine((data) => data.newPassword == data.confirmNewPassword, {
+    message: "Passwords must match",
+    path: ["confirmPassword"],
+  });

@@ -6,8 +6,9 @@ import {
   userVerificationSchema,
   passwordResetRequestSchema,
   passwordResetVerificationCodeSchema,
+  passwordResetSchema,
 } from "../validators/user.validator";
-import { passwordResetRequest, verifyPasswordResetCode } from "../controllers/passwordReset.controller";
+import { passwordResetRequest, resetPassword, verifyPasswordResetCode } from "../controllers/passwordReset.controller";
 
 const userRouter = express.Router();
 
@@ -26,6 +27,7 @@ userRouter.post(
   "/reset-password/verify-reset-code",
   validate(passwordResetVerificationCodeSchema), verifyPasswordResetCode
 );
+userRouter.patch("/change-password", validate(passwordResetSchema), resetPassword);
 userRouter.post("/login", login);
 
 export { userRouter };
